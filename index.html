@@ -182,7 +182,7 @@ footer .co b{color:var(--ink-2);font-weight:700}
               <div><input type="date" id="date" name="entry.1392032501" aria-label="date"></div>
               <div><input type="time" id="time" name="entry.616041995" step="900" aria-label="time"></div>
             </div>
-            <p class="err" data-t="eWhen"></p>
+            <p class="err" id="whenerr" data-t="eWhen"></p>
           </div>
 
           <div class="f">
@@ -271,7 +271,7 @@ ja:{
  formIntro:"現在テスト運用中です。本サービスのご利用に伴う料金はかかりません。お店でのお飲食代、通信料、その他ご自身に発生する費用はお客様のご負担となります。",
  reqTag:"必須", optTag:"任意",
  lShop:"予約したいお店の名前", hShop:"同じ名前のお店があるため、地域や最寄り駅も添えてください。例：鳥政 恵比寿", eShop:"お店の名前を入力してください",
- lWhen:"希望の日時", hWhen:"第一希望を入力してください。取れなかった場合は、近い時間帯でご相談します。", eWhen:"日付と時刻の両方を入力してください",
+ lWhen:"希望の日時", hWhen:"第一希望を入力してください。取れなかった場合は、近い時間帯でご相談します。<br>お店に連絡する時間をいただくため、3日後以降の日付をご指定ください。", eWhen:"日付と時刻の両方を入力してください", eWhenRange:"3日後以降の日付をご指定ください",
  lPeople:"人数", ePeople:"人数を入力してください",
  lName:"予約に使うお名前", hName:"本名でなくてかまいません。お店で「◯◯で予約した者です」と伝えて確認が取れる名前であれば、ニックネームでも大丈夫です。", eName:"お名前を入力してください",
  lTel:"連絡先の電話番号", hTel:"予約の結果と、お店との会話の要約をこの番号へSMSでお送りします。お店から直接ご連絡がいく場合もあります。<br>迷惑電話・迷惑SMSのブロック機能を使っている方は、解除するか、知らない番号からの受信を許可しておいてください。ブロックされていると結果をお伝えできません。", eTel:"連絡のつく電話番号を入力してください",
@@ -304,7 +304,7 @@ en:{
  formIntro:"This service is in testing. There is no charge for using it. Your bill at the restaurant, your own phone and data charges, and any other costs you incur are your own responsibility.",
  reqTag:"Required", optTag:"Optional",
  lShop:"Restaurant name", hShop:"Please add the area or nearest station, since many restaurants share a name. Example: Torimasa, Ebisu", eShop:"Please enter the restaurant name",
- lWhen:"Preferred date and time", hWhen:"Enter your first choice. If it isn't available, we will suggest a nearby time.", eWhen:"Please enter both a date and a time",
+ lWhen:"Preferred date and time", hWhen:"Enter your first choice. If it isn't available, we will suggest a nearby time.<br>Please choose a date at least three days from today, so we have time to call the restaurant.", eWhen:"Please enter both a date and a time", eWhenRange:"Please choose a date at least three days from today",
  lPeople:"Number of people", ePeople:"Please enter the number of people",
  lName:"Name for the reservation", hName:"It does not have to be your legal name. A nickname is fine, as long as the restaurant can find your booking when you give that name at the door.", eName:"Please enter a name",
  lTel:"Phone number for contact", hTel:"We will text the result and a summary of the call to this number. The restaurant may also contact you directly.<br>If you block calls or texts from unknown numbers, please turn that off or allow unknown senders. We cannot reach you if messages are blocked.", eTel:"Please enter a number we can reach you on",
@@ -349,6 +349,27 @@ apply(saved || ((navigator.language||"ja").slice(0,2)==="ja" ? "ja" : "en"));
       go=document.getElementById('go'),
       opened=Date.now(), sent=false;
 
+  // --- 受け付ける日付の範囲 ---------------------------------
+  // MIN_DAYS: 今日から何日後以降を受け付けるか（3 = 3日後以降）
+  // MAX_DAYS: 今日から何日後まで受け付けるか（不要なら null）
+  var MIN_DAYS = 3;
+  var MAX_DAYS = null;
+
+  function ymd(offset){
+    var d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+offset);
+    return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+  }
+  var dateEl=document.getElementById('date');
+  if(MIN_DAYS!==null) dateEl.min=ymd(MIN_DAYS);
+  if(MAX_DAYS!==null) dateEl.max=ymd(MAX_DAYS);
+
+  function inRange(v){
+    if(!v) return false;
+    if(MIN_DAYS!==null && v<ymd(MIN_DAYS)) return false;
+    if(MAX_DAYS!==null && v>ymd(MAX_DAYS)) return false;
+    return true;
+  }
+
   document.querySelectorAll('.consent label a').forEach(function(a){
     a.addEventListener('click',function(ev){ ev.stopPropagation(); });
   });
@@ -358,8 +379,15 @@ apply(saved || ((navigator.language||"ja").slice(0,2)==="ja" ? "ja" : "en"));
   form.addEventListener('submit',function(e){
     var v=true;
     v = bad(document.getElementById('shop'), !document.getElementById('shop').value.trim()) && v;
-    var d=document.getElementById('date'), t=document.getElementById('time');
-    v = bad(d, !(d.value && t.value)) && v;
+    var d=dateEl, t=document.getElementById('time');
+    var whenerr=document.getElementById('whenerr');
+    if(!(d.value && t.value)){
+      whenerr.innerHTML=T[lang].eWhen; v = bad(d,true) && v;
+    }else if(!inRange(d.value)){
+      whenerr.innerHTML=T[lang].eWhenRange; v = bad(d,true) && v;
+    }else{
+      bad(d,false);
+    }
     var p=document.getElementById('people');
     v = bad(p, !(p.value && +p.value>0)) && v;
     v = bad(document.getElementById('name'), !document.getElementById('name').value.trim()) && v;
