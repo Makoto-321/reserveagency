@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>予約ができない、を変えていく｜カケハビ</title>
+<meta name="description" content="電話でしか予約を受けていないお店に、カケハビが代わりに電話します。テスト運用中につき無料。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ffffff;
+  --ink:#000000;
+  --ink-2:#41474f;
+  --ink-3:#878e97;
+  --rule:#dfe3e8;
+  --mist:#f4f6f8;
+  --blue:#1447e6;
+  --blue-deep:#0a2472;
+  --blue-mist:#eaf0ff;
+  --measure:34em;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New",-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  font-feature-settings:"palt" 1;
+}
+html[lang=en] body{line-height:1.7}
+html[lang=en]{--measure:32em}
+.wrap{width:min(100% - 2.5rem, 62rem);margin-inline:auto}
+h1,h2,h3{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-weight:800;line-height:1.28;letter-spacing:.01em;margin:0}
+
+/* ---------- language ---------- */
+.langbar{display:flex;justify-content:flex-end;padding-top:1.4rem}
+.lang{display:inline-flex;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+.lang button{font:inherit;font-size:.8rem;font-weight:500;padding:.34rem .85rem;background:#fff;color:var(--ink-2);border:none;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:#fff}
+.lang button:hover{background:var(--blue-mist);color:var(--blue-deep)}
+.lang button[aria-pressed=true]:hover{background:var(--ink);color:#fff}
+
+/* ---------- hero ---------- */
+.hero{padding:clamp(3rem,9vh,5rem) 0 clamp(3.5rem,9vh,6rem)}
+.hero h1{font-size:clamp(2.4rem,7.4vw,5.4rem);letter-spacing:-.015em}
+.hero h1 span{display:block}
+.line-wrap{margin:2.4rem 0 1.1rem;height:2px;background:var(--rule);position:relative;overflow:hidden}
+.line-wrap i{position:absolute;inset:0;background:var(--blue);transform:scaleX(0);transform-origin:left;animation:dial 2.2s cubic-bezier(.22,.9,.3,1) .35s forwards}
+@keyframes dial{to{transform:scaleX(1)}}
+.status{font-size:.82rem;color:var(--ink-3);letter-spacing:.06em;min-height:1.6em}
+.status b{color:var(--blue);font-weight:700;opacity:0;animation:show .5s ease 2.5s forwards}
+.status i{font-style:normal;opacity:1;animation:hide .3s ease 2.4s forwards}
+@keyframes show{to{opacity:1}}
+@keyframes hide{to{opacity:0;display:none}}
+.lede{max-width:var(--measure);margin:1.6rem 0 0;font-size:1.06rem;color:var(--ink-2)}
+.free{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.7rem;padding:.42rem .9rem;background:var(--blue-mist);color:var(--blue-deep);font-size:.86rem;font-weight:700;border-radius:2px}
+.free::before{content:"";width:7px;height:7px;background:var(--blue);border-radius:50%;flex:none}
+.jump{display:inline-block;margin-top:2.6rem;padding:1rem 2rem;background:var(--ink);color:#fff;text-decoration:none;font-weight:700;font-size:1rem;border-radius:2px}
+.jump:hover{background:var(--blue)}
+
+/* ---------- steps ---------- */
+.steps{border-top:1px solid var(--rule);padding:clamp(3rem,7vw,5rem) 0}
+.steps h2{font-size:clamp(1.5rem,3.2vw,2.1rem);margin-bottom:2.6rem}
+.step{display:grid;grid-template-columns:2.6rem 1fr;gap:1.2rem;padding:1.5rem 0;border-top:1px solid var(--rule)}
+.step:first-of-type{border-top:none}
+.step .n{font-family:"Shippori Mincho B1",serif;font-size:1.35rem;font-weight:800;color:var(--blue);line-height:1.5}
+.step h3{font-size:1.1rem;font-weight:700;font-family:inherit;margin-bottom:.2rem}
+.step p{margin:0;color:var(--ink-2);font-size:.96rem;max-width:var(--measure)}
+
+/* ---------- form ---------- */
+.formzone{background:var(--mist);padding:clamp(3.5rem,8vw,6rem) 0}
+.card{background:#fff;padding:clamp(1.6rem,4vw,3.2rem);max-width:44rem;border-radius:3px}
+.card h2{font-size:clamp(1.45rem,3vw,1.95rem)}
+p.intro{color:var(--ink-2);margin:.9rem 0 2.4rem;font-size:.97rem;max-width:var(--measure)}
+.f{margin-bottom:2.1rem}
+.f label{display:block;font-weight:700;font-size:.95rem;margin-bottom:.35rem}
+.req{margin-left:.55rem;font-size:.72rem;font-weight:500;color:var(--blue);border:1px solid var(--blue);padding:.05rem .38rem;border-radius:2px;vertical-align:.1em}
+.opt{margin-left:.55rem;font-size:.72rem;font-weight:500;color:var(--ink-3)}
+.hint{font-size:.83rem;color:var(--ink-2);line-height:1.7;margin:.1rem 0 .7rem;max-width:var(--measure)}
+input[type=text],input[type=tel],input[type=date],input[type=time],input[type=number],textarea{
+  width:100%;font:inherit;font-size:1rem;color:var(--ink);background:transparent;
+  border:none;border-bottom:1.5px solid var(--rule);border-radius:0;
+  padding:.6rem .1rem;transition:border-color .15s;
+}
+textarea{border:1.5px solid var(--rule);padding:.7rem;resize:vertical;min-height:6.5rem;border-radius:2px}
+input:focus,textarea:focus{outline:none;border-color:var(--blue)}
+input:focus-visible{box-shadow:0 2px 0 0 var(--blue)}
+textarea:focus-visible{box-shadow:0 0 0 1px var(--blue)}
+.row{display:flex;gap:1.2rem;flex-wrap:wrap}
+.row>div{flex:1 1 9rem}
+.consent{background:var(--blue-mist);padding:1.2rem 1.3rem;border-radius:2px;margin-bottom:1.9rem}
+.consent .line{display:flex;gap:.75rem;align-items:flex-start}
+.consent input{margin-top:.42rem;width:1.05rem;height:1.05rem;accent-color:var(--blue);flex:none}
+.consent label{font-weight:500;font-size:.88rem;line-height:1.75}
+.consent label a{color:var(--blue-deep);font-weight:700;text-underline-offset:.22em;text-decoration-thickness:1px}
+.consent label a:hover{color:var(--blue)}
+.consent .err{margin:.6rem 0 0 1.8rem}
+button[type=submit]{width:100%;font:inherit;font-weight:700;font-size:1.02rem;padding:1.1rem;background:var(--ink);color:#fff;border:none;border-radius:2px;cursor:pointer}
+button[type=submit]:hover{background:var(--blue)}
+button[type=submit]:disabled{background:var(--ink-3);cursor:progress}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.err{color:#b3261e;font-size:.85rem;margin-top:.4rem;display:none}
+.f.bad input,.f.bad textarea{border-color:#b3261e}
+.f.bad .err{display:block}
+.done{display:none}
+.done h2{margin-bottom:1rem}
+.done p{color:var(--ink-2);max-width:var(--measure)}
+footer{padding:3rem 0 4rem;border-top:1px solid var(--rule);font-size:.83rem;color:var(--ink-3);line-height:1.9}
+footer p{max-width:var(--measure)}
+footer a{color:var(--ink-2)}
+footer .co{margin-top:1.2rem}
+footer .co b{color:var(--ink-2);font-weight:700}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .line-wrap i{transform:scaleX(1)}
+  .status i{display:none}.status b{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap langbar">
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" id="btn-ja" aria-pressed="true">日本語</button>
+    <button type="button" id="btn-en" aria-pressed="false">English</button>
+  </div>
+</div>
+
+<header class="wrap hero">
+  <h1 id="h1"></h1>
+  <div class="line-wrap"><i></i></div>
+  <p class="status"><i data-t="calling"></i><b data-t="connected"></b></p>
+  <p class="lede" data-t="lede"></p>
+  <p class="free" data-t="free"></p>
+  <p class="hint" data-t="freeNote" style="margin-top:.6rem"></p>
+  <p><a class="jump" href="#form" data-t="jump"></a></p>
+</header>
+
+<section class="wrap steps">
+  <h2 data-t="flowTitle"></h2>
+  <div class="step">
+    <div class="n" data-t="n1"></div>
+    <div><h3 data-t="s1h"></h3><p data-t="s1p"></p></div>
+  </div>
+  <div class="step">
+    <div class="n" data-t="n2"></div>
+    <div><h3 data-t="s2h"></h3><p data-t="s2p"></p></div>
+  </div>
+  <div class="step">
+    <div class="n" data-t="n3"></div>
+    <div><h3 data-t="s3h"></h3><p data-t="s3p"></p></div>
+  </div>
+</section>
+
+<section class="formzone" id="form">
+  <div class="wrap">
+    <div class="card">
+
+      <div id="formview">
+        <h2 data-t="formTitle"></h2>
+        <p class="intro" data-t="formIntro"></p>
+
+        <form id="req" action="https://docs.google.com/forms/d/e/FORM_ID/formResponse" method="POST" target="sink" novalidate>
+
+          <div class="f">
+            <label for="shop"><span data-t="lShop"></span><span class="req" data-t="reqTag"></span></label>
+            <p class="hint" data-t="hShop"></p>
+            <input type="text" id="shop" name="entry.1111111111" autocomplete="off">
+            <p class="err" data-t="eShop"></p>
+          </div>
+
+          <div class="f">
+            <label><span data-t="lWhen"></span><span class="req" data-t="reqTag"></span></label>
+            <p class="hint" data-t="hWhen"></p>
+            <div class="row">
+              <div><input type="date" id="date" name="entry.2222222222" aria-label="date"></div>
+              <div><input type="time" id="time" name="entry.3333333333" step="900" aria-label="time"></div>
+            </div>
+            <p class="err" data-t="eWhen"></p>
+          </div>
+
+          <div class="f">
+            <label for="people"><span data-t="lPeople"></span><span class="req" data-t="reqTag"></span></label>
+            <input type="number" id="people" name="entry.4444444444" min="1" max="30" inputmode="numeric" placeholder="2">
+            <p class="err" data-t="ePeople"></p>
+          </div>
+
+          <div class="f">
+            <label for="name"><span data-t="lName"></span><span class="req" data-t="reqTag"></span></label>
+            <p class="hint" data-t="hName"></p>
+            <input type="text" id="name" name="entry.5555555555" autocomplete="off">
+            <p class="err" data-t="eName"></p>
+          </div>
+
+          <div class="f">
+            <label for="tel"><span data-t="lTel"></span><span class="req" data-t="reqTag"></span></label>
+            <p class="hint" data-t="hTel"></p>
+            <input type="tel" id="tel" name="entry.6666666666" inputmode="tel" autocomplete="tel" placeholder="09012345678">
+            <p class="err" data-t="eTel"></p>
+          </div>
+
+          <div class="f">
+            <label for="note"><span data-t="lNote"></span><span class="opt" data-t="optTag"></span></label>
+            <p class="hint" data-t="hNote"></p>
+            <textarea id="note" name="entry.7777777777"></textarea>
+          </div>
+
+          <div class="trap" aria-hidden="true">
+            <label for="company">Company (leave blank)</label>
+            <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+          </div>
+          <input type="hidden" id="langfield" name="entry.8888888888" value="ja">
+
+          <div class="consent">
+            <div class="line">
+              <input type="checkbox" id="ok">
+              <label for="ok"><span data-t="consentPre"></span><a href="https://makoto-321.github.io/reserveagency_privacy_policy/" target="_blank" rel="noopener" data-t="privacy"></a><span data-t="consentMid"></span><a href="https://makoto-321.github.io/reserveagency_terms_of_service/" target="_blank" rel="noopener" data-t="terms"></a><span data-t="consentEnd"></span></label>
+            </div>
+            <p class="err" id="okerr" data-t="eOk"></p>
+          </div>
+
+          <button type="submit" id="go" data-t="submit"></button>
+        </form>
+        <noscript><p class="hint" data-t="nojs"></p></noscript>
+      </div>
+
+      <div class="done" id="doneview">
+        <h2 data-t="doneTitle"></h2>
+        <p data-t="doneP1"></p>
+        <p data-t="doneP2"></p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p data-t="footNote"></p>
+  <p class="co">
+    <b data-t="coName"></b><br>
+    <span data-t="coAddr"></span><br>
+    <span data-t="coPerson"></span><br>
+    <a href="mailto:shukanapplication@gmail.com">shukanapplication@gmail.com</a>
+  </p>
+</footer>
+
+<iframe name="sink" style="display:none" title="submit target"></iframe>
+
+<script>
+var T={
+ja:{
+ title:"予約ができない、を変えていく｜カケハビ",
+ h1:["予約ができない、","を変えていく。"],
+ calling:"お店に発信しています…", connected:"つながりました",
+ lede:"電話でしか予約を受けていないお店があります。営業時間に電話できない、電話が苦手、日本語で話すのが不安。理由は何であれ、その一本をカケハビが代わりにかけます。",
+ free:"テスト運用中のため、本サービスの利用に伴う料金はかかりません",
+ freeNote:"お店でのお飲食代、通信料、その他ご自身に発生する費用はお客様のご負担となります。",
+ jump:"お店の予約を依頼する",
+ flowTitle:"依頼してから、来店までの流れ",
+ n1:"一",n2:"二",n3:"三",
+ s1h:"フォームに希望を書く", s1p:"お店の名前と、行きたい日時・人数を入力してください。1分ほどで終わります。",
+ s2h:"カケハビがお店に電話します", s2p:"お店の営業時間に合わせて連絡します。混雑する時間帯は避け、つながらない場合も時間をおいて数回までにとどめます。",
+ s3h:"結果と通話の要約をSMSでお知らせします", s3p:"予約が取れたか取れなかったかに加えて、お店との会話の要約をご連絡します。当日はご記入いただいたお名前で来店してください。",
+ formTitle:"予約を依頼する",
+ formIntro:"現在テスト運用中です。本サービスのご利用に伴う料金はかかりません。お店でのお飲食代、通信料、その他ご自身に発生する費用はお客様のご負担となります。",
+ reqTag:"必須", optTag:"任意",
+ lShop:"予約したいお店の名前", hShop:"同じ名前のお店があるため、地域や最寄り駅も添えてください。例：鳥政 恵比寿", eShop:"お店の名前を入力してください",
+ lWhen:"希望の日時", hWhen:"第一希望を入力してください。取れなかった場合は、近い時間帯でご相談します。", eWhen:"日付と時刻の両方を入力してください",
+ lPeople:"人数", ePeople:"人数を入力してください",
+ lName:"予約に使うお名前", hName:"本名でなくてかまいません。お店で「◯◯で予約した者です」と伝えて確認が取れる名前であれば、ニックネームでも大丈夫です。", eName:"お名前を入力してください",
+ lTel:"連絡先の電話番号", hTel:"予約の結果と、お店との会話の要約をこの番号へSMSでお送りします。お店から直接ご連絡がいく場合もあります。<br>迷惑電話・迷惑SMSのブロック機能を使っている方は、解除するか、知らない番号からの受信を許可しておいてください。ブロックされていると結果をお伝えできません。", eTel:"連絡のつく電話番号を入力してください",
+ lNote:"その他、お店に伝えること", hNote:"アレルギー、苦手な食材、席の希望、記念日、車椅子や小さなお子さま連れなど、配慮が必要なことがあればご記入ください。",
+ consentPre:"", consentMid:"と", consentEnd:"に同意します。",
+ privacy:"プライバシーポリシー", terms:"利用規約",
+ eOk:"同意にチェックを入れてください",
+ submit:"この内容で依頼する",
+ nojs:"このページは JavaScript が有効な環境でご利用ください。",
+ doneTitle:"依頼を受け付けました",
+ doneP1:"カケハビがお店に電話し、予約の結果とお店との会話の要約をSMSでご連絡します。お店の営業時間の都合で、お返事までにお時間をいただく場合があります。",
+ doneP2:"SMSが届かない場合は、迷惑SMSのブロック設定をご確認ください。",
+ footNote:"電話予約の代行に関する検証のためのテストページです。いただいた情報は予約の代行とその結果連絡にのみ使用し、他の目的には利用しません。削除をご希望の場合はご連絡ください。",
+ coName:"カケハビ", coAddr:"東京都渋谷区円山町5番3号 MIEUX渋谷ビル8階", coPerson:"担当者：上村 諒"
+},
+en:{
+ title:"Booking shouldn't require a phone call | Kakehabi",
+ h1:["Booking shouldn't","require a phone call."],
+ calling:"Calling the restaurant…", connected:"Connected",
+ lede:"Many restaurants in Japan take reservations by phone only. Whether you can't call during their opening hours, dislike phone calls, or don't feel confident speaking Japanese, Kakehabi makes that call for you.",
+ free:"No charge for using this service while we are testing it",
+ freeNote:"Your bill at the restaurant, your own phone and data charges, and any other costs you incur are your own responsibility.",
+ jump:"Request a reservation",
+ flowTitle:"How it works",
+ n1:"1",n2:"2",n3:"3",
+ s1h:"Tell us what you want", s1p:"Enter the restaurant name, your preferred date and time, and how many people. It takes about a minute.",
+ s2h:"Kakehabi calls the restaurant", s2p:"We call during their opening hours and avoid their busiest times. If nobody answers, we try again later and stop after a few attempts.",
+ s3h:"We text you the result and a summary", s3p:"We tell you whether the reservation was confirmed or not, and send you a summary of the call with the restaurant. On the day, give the name you entered here at the door.",
+ formTitle:"Request a reservation",
+ formIntro:"This service is in testing. There is no charge for using it. Your bill at the restaurant, your own phone and data charges, and any other costs you incur are your own responsibility.",
+ reqTag:"Required", optTag:"Optional",
+ lShop:"Restaurant name", hShop:"Please add the area or nearest station, since many restaurants share a name. Example: Torimasa, Ebisu", eShop:"Please enter the restaurant name",
+ lWhen:"Preferred date and time", hWhen:"Enter your first choice. If it isn't available, we will suggest a nearby time.", eWhen:"Please enter both a date and a time",
+ lPeople:"Number of people", ePeople:"Please enter the number of people",
+ lName:"Name for the reservation", hName:"It does not have to be your legal name. A nickname is fine, as long as the restaurant can find your booking when you give that name at the door.", eName:"Please enter a name",
+ lTel:"Phone number for contact", hTel:"We will text the result and a summary of the call to this number. The restaurant may also contact you directly.<br>If you block calls or texts from unknown numbers, please turn that off or allow unknown senders. We cannot reach you if messages are blocked.", eTel:"Please enter a number we can reach you on",
+ lNote:"Anything the restaurant should know", hNote:"Allergies, ingredients you avoid, seating preferences, a birthday or anniversary, wheelchair access, young children — anything that needs arranging in advance.",
+ consentPre:"I agree to the ", consentMid:" and the ", consentEnd:".",
+ privacy:"Privacy Policy", terms:"Terms of Use",
+ eOk:"Please tick the box to continue",
+ submit:"Send this request",
+ nojs:"This page requires JavaScript.",
+ doneTitle:"Your request has been received",
+ doneP1:"Kakehabi will call the restaurant and text you the result along with a summary of the call. Depending on the restaurant's opening hours, this may take a while.",
+ doneP2:"If no text arrives, please check your settings for blocking unknown senders.",
+ footNote:"This is a test page for research into phone reservation support. We use the information you provide only to make the reservation and tell you the result, and for nothing else. Contact us if you would like your data deleted.",
+ coName:"Kakehabi", coAddr:"MIEUX Shibuya Building 8F, 5-3 Maruyamacho, Shibuya-ku, Tokyo", coPerson:"Contact: Ryo Uemura"
+}};
+
+var lang="ja";
+function apply(l){
+  lang=l;
+  var d=T[l];
+  document.documentElement.lang=l;
+  document.title=d.title;
+  document.getElementById("h1").innerHTML="<span>"+d.h1[0]+"</span><span>"+d.h1[1]+"</span>";
+  document.querySelectorAll("[data-t]").forEach(function(el){
+    el.innerHTML = d[el.getAttribute("data-t")] || "";
+  });
+  document.getElementById("langfield").value=l;
+  document.getElementById("btn-ja").setAttribute("aria-pressed", l==="ja");
+  document.getElementById("btn-en").setAttribute("aria-pressed", l==="en");
+  try{ localStorage.setItem("kh_lang", l); }catch(e){}
+}
+document.getElementById("btn-ja").onclick=function(){ apply("ja"); };
+document.getElementById("btn-en").onclick=function(){ apply("en"); };
+
+var saved=null; try{ saved=localStorage.getItem("kh_lang"); }catch(e){}
+apply(saved || ((navigator.language||"ja").slice(0,2)==="ja" ? "ja" : "en"));
+
+(function(){
+  var form=document.getElementById('req'),
+      ok=document.getElementById('ok'),
+      okerr=document.getElementById('okerr'),
+      go=document.getElementById('go'),
+      opened=Date.now(), sent=false;
+
+  document.querySelectorAll('.consent label a').forEach(function(a){
+    a.addEventListener('click',function(ev){ ev.stopPropagation(); });
+  });
+
+  function bad(el,on){ el.closest('.f').classList.toggle('bad',on); return !on; }
+
+  form.addEventListener('submit',function(e){
+    var v=true;
+    v = bad(document.getElementById('shop'), !document.getElementById('shop').value.trim()) && v;
+    var d=document.getElementById('date'), t=document.getElementById('time');
+    v = bad(d, !(d.value && t.value)) && v;
+    var p=document.getElementById('people');
+    v = bad(p, !(p.value && +p.value>0)) && v;
+    v = bad(document.getElementById('name'), !document.getElementById('name').value.trim()) && v;
+    var tel=document.getElementById('tel');
+    v = bad(tel, !/^[0-9+\-\s()]{10,}$/.test(tel.value.trim())) && v;
+
+    okerr.style.display = ok.checked ? 'none' : 'block';
+    if(!ok.checked) v=false;
+
+    if(document.getElementById('company').value !== '') v=false;
+    if(Date.now()-opened < 3000) v=false;
+
+    if(!v){
+      e.preventDefault();
+      var first=form.querySelector('.bad input, .bad textarea');
+      if(first){ first.focus(); } else { ok.focus(); }
+      return;
+    }
+    sent=true;
+    go.disabled=true;
+    go.textContent = (lang==="ja") ? "送信しています…" : "Sending…";
+  });
+
+  document.querySelector('iframe[name=sink]').addEventListener('load',function(){
+    if(!sent) return;
+    document.getElementById('formview').style.display='none';
+    var done=document.getElementById('doneview');
+    done.style.display='block';
+    done.setAttribute('tabindex','-1');
+    done.focus();
+    done.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+})();
+</script>
+</body>
+</html>
